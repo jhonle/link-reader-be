@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Query } from '@nestjs/common';
 import { LinksService } from './links.service';
 import { Response } from 'express';
 
@@ -6,9 +6,20 @@ import { Response } from 'express';
 export class LinksController {
   constructor(private readonly linksService: LinksService) {}
 
-  @Get()
-  scrapeLinks(@Query('link') link: string, @Res() response: Response): any {
+  @Post()
+  scrapeLinks(@Body('link') link: string, @Res() response: Response): any {
     this.linksService.scrapeLinks(link).subscribe({
+      next: (links) => response.status(200).send(links),
+      error: (error) => response.status(500).send(error),
+      complete: () => {
+        console.info('complete');
+      },
+    });
+  }
+
+  @Get()
+  getLinks(@Res() response: Response) {
+    this.linksService.getLinks().subscribe({
       next: (links) => response.status(200).send(links),
       error: (error) => response.status(500).send(error),
       complete: () => {

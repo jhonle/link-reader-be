@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { map, concatMap, catchError, Observable } from 'rxjs';
+import { map, concatMap, catchError, Observable, from } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link } from 'src/entities/links.entity';
@@ -37,5 +37,9 @@ export class LinksService {
           throw new ForbiddenException(`Error processing the link: ${error}`);
         }),
       );
+  }
+
+  getLinks(): Observable<Link[]> {
+    return from(this.linkRepository.find());
   }
 }
